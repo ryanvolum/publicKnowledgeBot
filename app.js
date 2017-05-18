@@ -37,6 +37,17 @@ const getKnowledge = (search, callback) => {
     });
 }
 
+const shortenResponse = (response) => {
+    const firstPeriodIndex = response.indexOf('.');
+    if (firstPeriodIndex > 150) {
+        for (var i = 150; (response[i] === ' ') || (i === 0); i--) {
+        }
+        return response.substring(0, i - 1);
+    } else {
+        return response.substring(0, firstPeriodIndex);
+    }
+}
+
 bot.dialog('/', [
     (session) => {
         if (session.message.text.toLowerCase() === "hi" || session.message.text.toLowerCase() === "hello") {
@@ -45,9 +56,9 @@ bot.dialog('/', [
             getKnowledge(session.message.text, (error, result) => {
                 if (result && result.entities && result.entities.conversation) {
                     if (result.entities.conversation.spokenText) {
-                        session.endDialog(result.entities.conversation.spokenText);
+                        session.endDialog(shortenResponse(result.entities.conversation.spokenText));
                     } else if (result.entities.conversation.displayText) {
-                        session.endDialog(result.entities.conversation.displayText);
+                        session.endDialog(shortenResponse(result.entities.conversation.displayText));
                     }
                 } else if (result) {
                     session.endDialog("I'm not really sure");
